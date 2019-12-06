@@ -79,12 +79,11 @@
         // If we are the second user to connect to the room we will be creating the offer
         if(members.length === 2){
 			const isOfferer = members.length === 2;
-			startWebRTC(isOfferer);
 		}
 		else if(members.length === 3){
 			const isOfferer = members.length === 3;
-			startWebRTC(isOfferer);
 		}
+		startWebRTC(isOfferer);
       });
     });
 
