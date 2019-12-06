@@ -53,8 +53,7 @@
       }]
     };
     let room;
-    let pc1;
-	let pc2;
+    let pc;
 
 
     function onSuccess() {};
@@ -77,12 +76,7 @@
       room.on('members', members => {
         console.log('MEMBERS', members);
         // If we are the second user to connect to the room we will be creating the offer
-        if(members.length === 2){
-			const isOfferer = members.length === 2;
-		}
-		else if(members.length === 3){
-			const isOfferer = members.length === 3;
-		}
+		const isOfferer = members.length === 2;
 		startWebRTC(isOfferer);
       });
     });
@@ -96,11 +90,11 @@
     }
 
     function startWebRTC(isOfferer) {
-      pc1 = new RTCPeerConnection(configuration);
+      pc = new RTCPeerConnection(configuration);
 
       // 'onicecandidate' notifies us whenever an ICE agent needs to deliver a
       // message to the other peer through the signaling server
-      pc1.onicecandidate = event => {
+      pc.onicecandidate = event => {
         if (event.candidate) {
           sendMessage({'candidate': event.candidate});
         }
@@ -108,13 +102,13 @@
 
       // If user is offerer let the 'negotiationneeded' event create the offer
       if (isOfferer) {
-        pc1.onnegotiationneeded = () => {
-          pc1.createOffer().then(localDescCreated).catch(onError);
+        pc.onnegotiationneeded = () => {
+          pc.createOffer().then(localDescCreated).catch(onError);
         }
       }
 
       // When a remote stream arrives display it in the #remoteVideo element
-      pc1.ontrack = event => {
+      pc.ontrack = event => {
         const stream = event.streams[0];
         if (!remoteVideo.srcObject || remoteVideo.srcObject.id !== stream.id) {
           remoteVideo.srcObject = stream;
@@ -128,7 +122,7 @@
         // Display your local video in #localVideo element
         localVideo.srcObject = stream;
         // Add your stream to be sent to the conneting peer
-        stream.getTracks().forEach(track => pc1.addTrack(track, stream));
+        stream.getTracks().forEach(track => pc.addTrack(track, stream));
       }, onError);
 
       // Listen to signaling data from Scaledrone
@@ -140,15 +134,15 @@
 
         if (message.sdp) {
           // This is called after receiving an offer or answer from another peer
-          pc1.setRemoteDescription(new RTCSessionDescription(message.sdp), () => {
+          pc.setRemoteDescription(new RTCSessionDescription(message.sdp), () => {
             // When receiving an offer lets answer it
-            if (pc1.remoteDescription.type === 'offer') {
-              pc1.createAnswer().then(localDescCreated).catch(onError);
+            if (pc.remoteDescription.type === 'offer') {
+              pc.createAnswer().then(localDescCreated).catch(onError);
             }
           }, onError);
         } else if (message.candidate) {
           // Add the new ICE candidate to our connections remote description
-          pc1.addIceCandidate(
+          pc.addIceCandidate(
             new RTCIceCandidate(message.candidate), onSuccess, onError
           );
         }
@@ -157,9 +151,9 @@
 	//startWebRTC ÔÚ´Ë½áÊø
 
     function localDescCreated(desc) {
-      pc1.setLocalDescription(
+      pc.setLocalDescription(
         desc,
-        () => sendMessage({'sdp': pc1.localDescription}),
+        () => sendMessage({'sdp': pc.localDescription}),
         onError
       );
     }
