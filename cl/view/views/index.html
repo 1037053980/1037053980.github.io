@@ -101,38 +101,7 @@
     }
 
   </style>
-   <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src='https://cdn.scaledrone.com/scaledrone.min.js' type='text/javascript'></script>
-    <script src="javascripts/webrtc.js"></script>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <style>
-        body {
-            display: flex;
-            height: 100vh;
-            margin: 0;
-            align-items: center;
-            justify-content: center;
-            padding: 0 50px;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-        video {
-            max-width: calc(50% - 100px);
-            margin: 0 50px;
-            box-sizing: border-box;
-            border-radius: 2px;
-            padding: 0;
-            box-shadow: rgba(156, 172, 172, 0.2) 0px 2px 2px, rgba(156, 172, 172, 0.2) 0px 4px 4px, rgba(156, 172, 172, 0.2) 0px 8px 8px, rgba(156, 172, 172, 0.2) 0px 16px 16px, rgba(156, 172, 172, 0.2) 0px 32px 32px, rgba(156, 172, 172, 0.2) 0px 64px 64px;
-        }
-        .copy {
-            position: fixed;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 16px;
-            color: rgba(0, 0, 0, 0.5);
-        }
-    </style>
+
 <body>
 <!--<button id="video_to_ascii"onclick="start_end_ascii()">start</button>-->
 <h1 id="namepoint"class="title1"></h1>
@@ -147,12 +116,4 @@
     <button class="random-button" onclick="randomroom()" id = "random-button">随机房间号</button>
 
   </div>
-  <video id="localVideo" autoplay muted></video>
-<video id="remoteVideo" autoplay></video>
-<svg id="hangup" class="hidden" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewbox="-10 -10 68 68">
-    <circle cx="24" cy="24" r="34">
-        <title>Hangup</title>
-    </circle>
-    <path transform="scale(0.7), translate(11,10)" d="M24 18c-3.21 0-6.3.5-9.2 1.44v6.21c0 .79-.46 1.47-1.12 1.8-1.95.98-3.74 2.23-5.33 3.7-.36.35-.85.57-1.4.57-.55 0-1.05-.22-1.41-.59L.59 26.18c-.37-.37-.59-.87-.59-1.42 0-.55.22-1.05.59-1.42C6.68 17.55 14.93 14 24 14s17.32 3.55 23.41 9.34c.37.36.59.87.59 1.42 0 .55-.22 1.05-.59 1.41l-4.95 4.95c-.36.36-.86.59-1.41.59-.54 0-1.04-.22-1.4-.57-1.59-1.47-3.38-2.72-5.33-3.7-.66-.33-1.12-1.01-1.12-1.8v-6.21C30.3 18.5 27.21 18 24 18z" fill="white"/>
-</svg>
 </body>
