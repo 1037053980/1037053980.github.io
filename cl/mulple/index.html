@@ -1,217 +1,161 @@
 <!DOCTYPE html>
-<!--
- *  Copyright (c) 2015 The WebRTC project authors. All Rights Reserved.
- *
- *  Use of this source code is governed by a BSD-style license
- *  that can be found in the LICENSE file in the root of the source
- *  tree.
--->
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>Multiple peer connections</title>
+  <script type='text/javascript' src='https://cdn.scaledrone.com/scaledrone.min.js'></script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <style>
+    body {
+      display: flex;
+      height: 100vh;
+      margin: 0;
+      align-items: center;
+      justify-content: center;
+      padding: 0 50px;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    video {
+      max-width: calc(50% - 100px);
+      margin: 0 50px;
+      box-sizing: border-box;
+      border-radius: 2px;
+      padding: 0;
+      box-shadow: rgba(156, 172, 172, 0.2) 0px 2px 2px, rgba(156, 172, 172, 0.2) 0px 4px 4px, rgba(156, 172, 172, 0.2) 0px 8px 8px, rgba(156, 172, 172, 0.2) 0px 16px 16px, rgba(156, 172, 172, 0.2) 0px 32px 32px, rgba(156, 172, 172, 0.2) 0px 64px 64px;
+    }
+    .copy {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      color: rgba(0, 0, 0, 0.5);
+    }
+  </style>
 </head>
 <body>
-<div id="container">
-    <video id="video1" playsinline autoplay muted></video>
-    <video id="video2" playsinline autoplay></video>
-    <video id="video3" playsinline autoplay></video>
-    <div>
-        <button id="startButton">打开摄像头</button>
-        <button id="callButton">呼叫</button>
-        <button id="hangupButton">挂断</button>
-    </div>
-</div>
-<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
-<script text="javascript" async>
-    'use strict';
-    const startButton = document.getElementById('startButton');
-    const callButton = document.getElementById('callButton');
-    const hangupButton = document.getElementById('hangupButton');
-    callButton.disabled = true;
-    hangupButton.disabled = true;
-    startButton.onclick = start;
-    callButton.onclick = call;
-    hangupButton.onclick = hangup;
+  <video id="localVideo" autoplay muted></video>
+  <video id="remoteVideo" autoplay></video>
 
-    const video1 = document.querySelector('video#video1');
-    const video2 = document.querySelector('video#video2');
-    const video3 = document.querySelector('video#video3');
+  <script text="javascript">
+      // Generate random room name if needed
+    if (!location.hash) {
+      location.hash = Math.floor(Math.random() * 0xFFFFFF).toString(16);
+    }
+    const roomHash = location.hash.substring(1);
 
-    let pc1Local;
-    let pc1Remote;
-    let pc2Local;
-    let pc2Remote;
-    const offerOptions = {
-      offerToReceiveAudio: 1,
-      offerToReceiveVideo: 1
+    // TODO: Replace with your own channel ID
+    const drone = new ScaleDrone('yiS12Ts5RdNhebyM');
+    // Room name needs to be prefixed with 'observable-'
+    const roomName = 'observable-' + roomHash;
+    const configuration = {
+      iceServers: [{
+        urls: 'stun:stun.l.google.com:19302'
+      }]
+    };
+    let room;
+    let pc;
+
+
+    function onSuccess() {};
+    function onError(error) {
+      console.error(error);
     };
 
-    function gotStream(stream) {
-      console.log('Received local stream');
-      video1.srcObject = stream;
-      window.localStream = stream;
-      callButton.disabled = false;
-    }
-
-    function start() {
-      console.log('Requesting local stream');
-      startButton.disabled = true;
-      navigator.mediaDevices
-          .getUserMedia({
-            audio: true,
-            video: true
-          })
-          .then(gotStream)
-          .catch(e => console.log('getUserMedia() error: ', e));
-    }
-
-    function call() {
-      callButton.disabled = true;
-      hangupButton.disabled = false;
-      console.log('Starting calls');
-      const audioTracks = window.localStream.getAudioTracks();
-      const videoTracks = window.localStream.getVideoTracks();
-      if (audioTracks.length > 0) {
-        console.log(`Using audio device: ${audioTracks[0].label}`);
+    drone.on('open', error => {
+      if (error) {
+        return console.error(error);
       }
-      if (videoTracks.length > 0) {
-        console.log(`Using video device: ${videoTracks[0].label}`);
+      room = drone.subscribe(roomName);
+      room.on('open', error => {
+        if (error) {
+          onError(error);
+        }
+      });
+      // We're connected to the room and received an array of 'members'
+      // connected to the room (including us). Signaling server is ready.
+      room.on('members', members => {
+        console.log('MEMBERS', members);
+        // If we are the second user to connect to the room we will be creating the offer
+        const isOfferer = members.length === 2;
+        startWebRTC(isOfferer);
+      });
+    });
+
+    // Send signaling data via Scaledrone
+    function sendMessage(message) {
+      drone.publish({
+        room: roomName,
+        message
+      });
+    }
+
+    function startWebRTC(isOfferer) {
+      pc = new RTCPeerConnection(configuration);
+
+      // 'onicecandidate' notifies us whenever an ICE agent needs to deliver a
+      // message to the other peer through the signaling server
+      pc.onicecandidate = event => {
+        if (event.candidate) {
+          sendMessage({'candidate': event.candidate});
+        }
+      };
+
+      // If user is offerer let the 'negotiationneeded' event create the offer
+      if (isOfferer) {
+        pc.onnegotiationneeded = () => {
+          pc.createOffer().then(localDescCreated).catch(onError);
+        }
       }
-      // Create an RTCPeerConnection via the polyfill.
-      const servers = null;
-      pc1Local = new RTCPeerConnection(servers);
-      pc1Remote = new RTCPeerConnection(servers);
-      pc1Remote.ontrack = gotRemoteStream1;
-      pc1Local.onicecandidate = iceCallback1Local;
-      pc1Remote.onicecandidate = iceCallback1Remote;
-      console.log('pc1: created local and remote peer connection objects');
 
-      pc2Local = new RTCPeerConnection(servers);
-      pc2Remote = new RTCPeerConnection(servers);
-      pc2Remote.ontrack = gotRemoteStream2;
-      pc2Local.onicecandidate = iceCallback2Local;
-      pc2Remote.onicecandidate = iceCallback2Remote;
-      console.log('pc2: created local and remote peer connection objects');
+      // When a remote stream arrives display it in the #remoteVideo element
+      pc.ontrack = event => {
+        const stream = event.streams[0];
+        if (!remoteVideo.srcObject || remoteVideo.srcObject.id !== stream.id) {
+          remoteVideo.srcObject = stream;
+        }
+      };
 
-      window.localStream.getTracks().forEach(track => pc1Local.addTrack(track, window.localStream));
-      console.log('Adding local stream to pc1Local');
-      pc1Local
-          .createOffer(offerOptions)
-          .then(gotDescription1Local, onCreateSessionDescriptionError);
+      navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: true,
+      }).then(stream => {
+        // Display your local video in #localVideo element
+        localVideo.srcObject = stream;
+        // Add your stream to be sent to the conneting peer
+        stream.getTracks().forEach(track => pc.addTrack(track, stream));
+      }, onError);
 
-      window.localStream.getTracks().forEach(track => pc2Local.addTrack(track, window.localStream));
-      console.log('Adding local stream to pc2Local');
-      pc2Local.createOffer(offerOptions)
-          .then(gotDescription2Local, onCreateSessionDescriptionError);
+      // Listen to signaling data from Scaledrone
+      room.on('data', (message, client) => {
+        // Message was sent by us
+        if (client.id === drone.clientId) {
+          return;
+        }
+
+        if (message.sdp) {
+          // This is called after receiving an offer or answer from another peer
+          pc.setRemoteDescription(new RTCSessionDescription(message.sdp), () => {
+            // When receiving an offer lets answer it
+            if (pc.remoteDescription.type === 'offer') {
+              pc.createAnswer().then(localDescCreated).catch(onError);
+            }
+          }, onError);
+        } else if (message.candidate) {
+          // Add the new ICE candidate to our connections remote description
+          pc.addIceCandidate(
+            new RTCIceCandidate(message.candidate), onSuccess, onError
+          );
+        }
+      });
     }
 
-    function onCreateSessionDescriptionError(error) {
-      console.log(`Failed to create session description: ${error.toString()}`);
+    function localDescCreated(desc) {
+      pc.setLocalDescription(
+        desc,
+        () => sendMessage({'sdp': pc.localDescription}),
+        onError
+      );
     }
-
-    function gotDescription1Local(desc) {
-      pc1Local.setLocalDescription(desc);
-      console.log(`Offer from pc1Local\n${desc.sdp}`);
-      pc1Remote.setRemoteDescription(desc);
-      // Since the 'remote' side has no media stream we need
-      // to pass in the right constraints in order for it to
-      // accept the incoming offer of audio and video.
-      pc1Remote.createAnswer().then(gotDescription1Remote, onCreateSessionDescriptionError);
-    }
-
-    function gotDescription1Remote(desc) {
-      pc1Remote.setLocalDescription(desc);
-      console.log(`Answer from pc1Remote\n${desc.sdp}`);
-      pc1Local.setRemoteDescription(desc);
-    }
-
-    function gotDescription2Local(desc) {
-      pc2Local.setLocalDescription(desc);
-      console.log(`Offer from pc2Local\n${desc.sdp}`);
-      pc2Remote.setRemoteDescription(desc);
-      // Since the 'remote' side has no media stream we need
-      // to pass in the right constraints in order for it to
-      // accept the incoming offer of audio and video.
-      pc2Remote.createAnswer().then(gotDescription2Remote, onCreateSessionDescriptionError);
-    }
-
-    function gotDescription2Remote(desc) {
-      pc2Remote.setLocalDescription(desc);
-      console.log(`Answer from pc2Remote\n${desc.sdp}`);
-      pc2Local.setRemoteDescription(desc);
-    }
-
-    function hangup() {
-      console.log('Ending calls');
-      pc1Local.close();
-      pc1Remote.close();
-      pc2Local.close();
-      pc2Remote.close();
-      pc1Local = pc1Remote = null;
-      pc2Local = pc2Remote = null;
-      hangupButton.disabled = true;
-      callButton.disabled = false;
-    }
-
-    function gotRemoteStream1(e) {
-      if (video2.srcObject !== e.streams[0]) {
-        video2.srcObject = e.streams[0];
-        console.log('pc1: received remote stream');
-      }
-    }
-
-    function gotRemoteStream2(e) {
-      if (video3.srcObject !== e.streams[0]) {
-        video3.srcObject = e.streams[0];
-        console.log('pc2: received remote stream');
-      }
-    }
-
-    function iceCallback1Local(event) {
-      handleCandidate(event.candidate, pc1Remote, 'pc1: ', 'local');
-    }
-
-    function iceCallback1Remote(event) {
-      handleCandidate(event.candidate, pc1Local, 'pc1: ', 'remote');
-    }
-
-    function iceCallback2Local(event) {
-      handleCandidate(event.candidate, pc2Remote, 'pc2: ', 'local');
-    }
-
-    function iceCallback2Remote(event) {
-      handleCandidate(event.candidate, pc2Local, 'pc2: ', 'remote');
-    }
-
-    function handleCandidate(candidate, dest, prefix, type) {
-      dest.addIceCandidate(candidate)
-          .then(onAddIceCandidateSuccess, onAddIceCandidateError);
-      console.log(`${prefix}New ${type} ICE candidate: ${candidate ? candidate.candidate : '(null)'}`);
-    }
-
-    function onAddIceCandidateSuccess() {
-      console.log('AddIceCandidate success.');
-    }
-
-    function onAddIceCandidateError(error) {
-      console.log(`Failed to add ICE candidate: ${error.toString()}`);
-    }
-
-</script>
-
-<script text="javascript">
-  (function(i, s, o, g, r, a, m) {
-    i['GoogleAnalyticsObject']=r; i[r]=i[r]||function() {
-      (i[r].q=i[r].q||[]).push(arguments);
-    }, i[r].l=1*new Date(); a=s.createElement(o),
-      m=s.getElementsByTagName(o)[0]; a.async=1; a.src=g; m.parentNode.insertBefore(a, m);
-    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
-
-    ga('create', 'UA-48530561-1', 'auto');
-    ga('send', 'pageview');
-
-</script>
-
+  </script>
 </body>
 </html>
