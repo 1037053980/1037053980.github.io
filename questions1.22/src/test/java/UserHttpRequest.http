@@ -1,0 +1,32 @@
+### 测试用户注册功能
+POST http://localhost:8080/user/register
+Content-Type: application/x-www-form-urlencoded
+
+username=lhj&password=123456
+
+### 测试用户登录功能
+POST http://localhost:8080/user/login
+Content-Type: application/x-www-form-urlencoded
+
+username=17373249574&password=123456
+
+### 测试用户修改密码功能
+POST http://localhost:8080/user/change_password
+Content-Type: application/x-www-form-urlencoded
+
+oldPassword=123456&newPassword=666666
+
+### 获取用户资料，重启服务器，测试，测试时先登录
+GET http://localhost:8080/user/get_by_id
+
+### 修改用户资料
+POST http://localhost:8080/user/changeInfo
+Content-Type: application/x-www-form-urlencoded
+
+phone=13866666666&email=root6@qq.com&gender=0
+
+### 判断是否为管理员
+GET http://localhost:8080/user/is_administer
+
+### 加载用户做题信息
+GET http://localhost:8080/user/detail

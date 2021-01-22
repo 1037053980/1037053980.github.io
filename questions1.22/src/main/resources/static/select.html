@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="cn">
+    <head>
+        <meta charset="UTF-8">
+        <title>考试系统</title>
+        <script src="js/vue.js"></script>
+        <script src="js/jquery-3.2.1.min.js"></script>
+        <script src="js/bootstrap.js"></script>
+        <link href="css/select.css" type="text/css" rel="stylesheet">
+    </head>
+<body background="img/bg.jpg">
+
+
+<div style="height: 10px" >
+    <a href="userInfo.html" class="ah" ><h2>个人信息</h2></a>
+    <a href="password.html" class="ah" ><h2>修改密码</h2></a>
+    <div  id="show">
+        <a href="addQuestion.html" class="ah" v-if="isAdMi.id"><h2>添加题目</h2></a>
+    </div>
+</div>
+
+
+<div class="table-content" id="sub">
+    <div class="d_t1">
+        <div v-for="p in typeList" class="d_t2">
+            <div class="d_t3">
+                <p  v-on:click="jump(p.title)" v-text="p.title">Java</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="js/user-select.js"></script>
+</body>
+</html>

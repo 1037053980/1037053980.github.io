@@ -1,0 +1,5 @@
+### 添加到购物车
+POST http://localhost:8080/cart/add_to_cart
+Content-Type: application/x-www-form-urlencoded
+
+pid=10000009&amount=200

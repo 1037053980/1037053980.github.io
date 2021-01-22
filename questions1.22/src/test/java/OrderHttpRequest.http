@@ -1,0 +1,12 @@
+### 添加订单
+POST http://localhost:8080/order/add_to_order
+Content-Type: application/x-www-form-urlencoded
+
+### 获取个人订单列表
+GET http://localhost:8080/order/get_orders
+
+### 获取订单商品列表
+GET http://localhost:8080/order/get_order_and_product?oid=30
+
+### 获取列表
+GET http://localhost:8080/order/get_order_details

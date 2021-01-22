@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.tedu.store.mapper.QuestionTypeMapper">
+    <!--  -->
+    <!-- Integer insert(QuestionType questionType) -->
+    <insert id="insert" >
+        insert into que_type(
+            id, title, gmt_create, gmt_modified
+        ) values(
+            #{id}, #{title}, #{gmtCreate}, #{gmtModified}
+        )
+    </insert>
+
+    <!-- QuestionType findById(Integer id)) -->
+    <select id="findById" resultType="cn.tedu.store.entity.QuestionType">
+        select
+            id, title,
+            gmt_create as gmtCreate, gmt_modified as gmtModified
+        from
+            que_type where id = #{id}
+    </select>
+
+    <!-- QuestionType findByTitle(String title) -->
+    <select id="findByTitle" resultType="cn.tedu.store.entity.QuestionType">
+        select
+            id, title,
+            gmt_create as gmtCreate, gmt_modified as gmtModified
+        from
+            que_type where  title = #{title}
+    </select>
+
+    <!-- List<QuestionType> findAllTypes() -->
+    <select id="findAllTypes" resultType="cn.tedu.store.entity.QuestionType">
+        select
+            id, title,
+            gmt_create as gmtCreate, gmt_modified as gmtModified
+        from
+            que_type
+        order by id
+    </select>
+</mapper>
+

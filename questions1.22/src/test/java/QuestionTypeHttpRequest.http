@@ -1,0 +1,8 @@
+### 添加问题种类
+POST http://localhost:8080/que_type/add_type
+Content-Type: application/x-www-form-urlencoded
+
+title=数学分析
+
+### 获取问题种类列表
+GET http://localhost:8080/que_type/get_type_list

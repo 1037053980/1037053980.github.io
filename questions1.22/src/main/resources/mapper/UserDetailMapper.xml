@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.tedu.store.mapper.UserDetailMapper">
+    <!--  -->
+    <!-- Integer insert(UserDetail userDetail) -->
+    <insert id="insert" >
+        insert into user_detail(id, uid,
+                        solved_total, ac_total,
+                        wo_total, gmt_create, gmt_modified)
+        values (#{id}, #{uid}, #{solvedTotal}, #{acTotal},
+                #{woTotal}, #{gmtCreate}, #{gmtModified});
+    </insert>
+
+    <!-- Integer updateInfoByUid(UserDetail userDetail) -->
+    <update id="updateInfoByUid">
+        update
+            user_detail
+        set
+            solved_total=#{solvedTotal},ac_total=#{acTotal},
+            wo_total=#{woTotal}, gmt_modified=#{gmtModified}
+        where uid=#{uid}
+    </update>
+
+    <!-- UserDetail findByUid(Integer uid) -->
+    <select id="findByUid" resultType="cn.tedu.store.entity.UserDetail">
+        select id, uid,
+        solved_total as solvedTotal, ac_total as acTotal,
+        wo_total as woTotal, gmt_create as gmtCreate,
+        gmt_modified as gmtModified
+        from user_detail where uid=#{uid};
+    </select>
+</mapper>
+

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../js/vue.js"></script>
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <script src="../js/bootstrap.js"></script>
+    <style>
+        .d_1{
+            width:600px;
+            height: 600px;
+            position: absolute;
+			background:linear-gradient(#fff1eb,#ace0f9);
+            left:50%;
+            top:50%;
+            margin-left:-300px;
+            margin-top:-300px;
+        }
+        .i_p{
+            margin-left: 30%;
+        }
+        a{
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body background="img/bg.jpg">
+<div><a href="select.html">选择科目</a></div>
+<div class="d_1" id="QA">
+    <p v-text="user.title" id="question"></p>
+    <input type="radio" id="radio_1" name="r" value="1">
+        <span v-text="'A'+' '+user.answer1"></span><br>
+    <input type="radio" id="radio_2" name="r" value="2">
+        <span v-text="'B'+' '+user.answer2"></span><br>
+    <input type="radio" id="radio_3" name="r" value="3">
+        <span v-text="'C'+' '+user.answer3"></span><br>
+    <input type="radio" id="radio_4" name="r" value="4">
+        <span v-text="'D'+' '+user.answer4"></span><br>
+    <input type="button" class="i_p" v-on:click="confirm()" value="提交">
+</div>
+<script src="js/question.js"></script>
+</body>
+</html>

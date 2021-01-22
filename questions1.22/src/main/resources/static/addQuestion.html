@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title >个人信息</title>
+    <script src="../js/vue.js"></script>
+    <script src="../js/jquery-3.2.1.min.js"></script>
+    <script src="../js/bootstrap.js"></script>
+    <style>
+        .panel-body{
+            border: 1px;
+            margin: 0 auto;
+            width: 50%;
+			background:linear-gradient(#fff1eb,#ace0f9);
+            cellpadding:"5px";
+            cellspacing:"0";
+        }
+        a{
+            text-decoration: none;
+        }
+		.threed{
+        color: #fafafa;
+        letter-spacing: 0;
+        }
+    </style>
+
+</head>
+<body background="img/bg.jpg" >
+<div>
+    <h3><a href="select.html" >选择科目</a> </h3>
+</div>
+<h2 class="threed" align="center">添加题目</h2>
+<div class="panel-body" id="addApp">
+    <!--修改资料表单开始-->
+    <div class="panel-body">
+        <p>题目</p>
+        <input type="text" id="q_title"/>
+        <p>请输入科目</p>
+        <input type="text" id="q_type"/>
+        <p>A选项</p>
+        <input type="text" id="q_answer1"/>
+        <p>B选项</p>
+        <input type="text" id="q_answer2"/>
+        <p>C选项</p>
+        <input type="text" id="q_answer3"/>
+        <p>D选项</p>
+        <input type="text" id="q_answer4"/>
+        <p>正确答案(请输入数字1,2,3,4代表A,B,C,D)</p>
+        <input type="text" id="q_correct"/><br><br>
+        <input type="button" v-on:click="addQ()" value="提交" style="margin-left: 15%">
+    </div>
+</div>
+<script src="js/add_question.js"></script>
+</body>
+</html>

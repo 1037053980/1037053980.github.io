@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.tedu.store.mapper.QuestionSolvedMapper">
+    <!--  -->
+    <!-- Integer insert(QuestionSolved questionSolved) -->
+    <insert id="insert" >
+        insert into que_solved(
+        uid,
+        qid, a_or_w,
+        gmt_create, gmt_modified)
+        values (
+        #{uid},#{qid},
+        #{acOrWo},#{gmtCreate},#{gmtModified}
+        )
+    </insert>
+
+    <!-- List<QuestionSolved> findByUid(Integer uid) -->
+    <select id="findByUid" resultType="cn.tedu.store.entity.QuestionSolved">
+        select id, uid,
+        qid,a_or_w as acOrWo,
+        gmt_create as gmtCreate, gmt_modified as gmtModified
+        from que_solved
+        where uid = #{uid}
+    </select>
+
+</mapper>
+

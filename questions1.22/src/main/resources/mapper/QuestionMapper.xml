@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.tedu.store.mapper.QuestionMapper">
+    <!--  -->
+    <!-- Integer insert(Question question) -->
+    <insert id="insert" >
+        insert into question(id, title,
+        type_name,
+        type_id, answer1,
+        answer2, answer3,
+        answer4, correct,
+        gmt_create, gmt_modified)
+        values (#{id}, #{title},
+        #{typeName},
+        #{typeId}, #{answer1},
+        #{answer2},#{answer3},
+        #{answer4},#{correct},
+        #{gmtCreate},#{gmtModified})
+    </insert>
+
+    <!-- List<Question> findQuestionsByTypeName(String typeName) -->
+    <select id="findQuestionsByTypeName" resultType="cn.tedu.store.entity.Question">
+        select id, title,
+        type_id as typeId,
+        type_name as typeName,answer1,
+        answer2, answer3,
+        answer4, correct,
+        gmt_create as gmtCreate, gmt_modified as gmtModified
+        from question
+        where type_name = #{typeName}
+    </select>
+
+    <!-- Question findQuestionById(Integer id) -->
+    <select id="findQuestionById" resultType="cn.tedu.store.entity.Question">
+        select id, title,
+        type_id as typeId,
+        type_name as typeName,answer1,
+        answer2, answer3,
+        answer4, correct,
+        gmt_create as gmtCreate, gmt_modified as gmtModified
+        from question
+        where id=#{id}
+    </select>
+</mapper>
+

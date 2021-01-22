@@ -1,0 +1,32 @@
+a{
+    text-decoration: none;
+}
+.d_t1{
+    margin-top: 5%;
+    height: 300px;
+    width: 100%;
+    /*background: blue;*/
+}
+.d_t2{
+    width: 20%;
+    margin-left: 20%;
+    height: 200px;
+    border:1px solid #ccc;
+    float: left;
+    box-sizing: border-box;
+}
+.d_t3{
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    width: 300px;
+    height: 200px;
+    /*border:1px solid #666;*/
+}
+.ah{
+    width: 20%;
+    height: 10px;
+    border:0px solid #ccc;
+    float: left;
+    box-sizing: border-box;
+}

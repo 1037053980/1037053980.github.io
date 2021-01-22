@@ -1,0 +1,7 @@
+### 获取商品热销列表
+GET http://localhost:8080/product/hot_list
+
+### 获取指定商品
+GET http://localhost:8080/product/detail?id=10000002
+
+

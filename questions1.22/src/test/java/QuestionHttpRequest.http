@@ -1,0 +1,26 @@
+### 添加问题
+POST http://localhost:8080/question/addQuestion
+Content-Type: application/x-www-form-urlencoded
+
+title=请问3*4等于多少？&typeName=数学&answer1=5&answer2=12&answer3=7&answer4=8&correct=2
+
+### 查询问题
+GET http://localhost:8080/question/get_question_by_type?type=数据结构
+
+### 查询问题byId
+GET http://localhost:8080/question/get_question_by_id?id=5
+
+### 判题
+POST http://localhost:8080/question/judge
+Content-Type: application/x-www-form-urlencoded
+
+qid=111&select=1
+
+### 查询未解决问题
+GET http://localhost:8080/question/get_question_unsolved?type=数据结构
+
+### 增加题目（管理员）
+POST http://localhost:8080/question/add_question
+Content-Type: application/x-www-form-urlencoded
+
+title=请问新中国成立时间是哪一年？&typeName=历史&answer1=1947&answer2=1948&answer3=1949&answer4=1950&correct=3
